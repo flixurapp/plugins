@@ -7,6 +7,7 @@ require (
 	github.com/flixurapp/flixur/proto/go v0.0.0-20260227094958-2aca01bd6510
 	github.com/oklog/ulid/v2 v2.1.1
 	github.com/rs/zerolog v1.34.0
+	github.com/samber/lo v1.52.0
 	go.uploadedlobster.com/musicbrainzws2 v0.18.0
 )
 
@@ -17,5 +18,6 @@ require (
 	go.uploadedlobster.com/mbtypes v0.4.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )

@@ -12,6 +12,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/samber/lo"
 	"go.uploadedlobster.com/musicbrainzws2"
 )
 
@@ -80,21 +81,20 @@ func main() {
 				Message: err.Error(),
 			}
 		} else {
-			results := []*protobuf.Artist{}
+			return &protobuf.FeatureArtistSearchResponse{
+				Results: lo.Map(res.Artists, func(artist musicbrainzws2.Artist, _ int) *protobuf.Artist {
+					var area *string
+					if artist.Area != nil {
+						area = &artist.Area.Name
+					}
 
-			for _, artist := range res.Artists {
-				results = append(results,
-					&protobuf.Artist{
+					return &protobuf.Artist{
 						Id:       string(artist.ID),
 						Provider: INFO.Id,
 						Name:     artist.Name,
-						Location: &artist.Area.Name,
-					},
-				)
-			}
-
-			return &protobuf.FeatureArtistSearchResponse{
-				Results: results,
+						Location: area,
+					}
+				}),
 			}, nil
 		}
 	})
