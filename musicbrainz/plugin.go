@@ -85,11 +85,10 @@ func main() {
 			for _, artist := range res.Artists {
 				results = append(results,
 					&protobuf.Artist{
-						Id:          string(artist.ID),
-						Provider:    INFO.Id,
-						Name:        artist.Name,
-						Location:    &artist.Area.Name,
-						Description: &artist.Disambiguation,
+						Id:       string(artist.ID),
+						Provider: INFO.Id,
+						Name:     artist.Name,
+						Location: &artist.Area.Name,
 					},
 				)
 			}
