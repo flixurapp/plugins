@@ -1,8 +1,12 @@
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/flixurapp/flixur/pluginkit v0.0.0-20260227083957-d7306194f1df h1:nQTvwwIpLYXBVOhR4t+KFFJs6kmXFDYQ+7Ghq+qjQf4=
 github.com/flixurapp/flixur/pluginkit v0.0.0-20260227083957-d7306194f1df/go.mod h1:yoVadwtsQAJoqeQMKYF/K+1bBP0+lR88y1gL/tqd9wY=
+github.com/flixurapp/flixur/pluginkit v0.0.0-20260227231322-350c131943ba h1:AtLm4S7cLhRLKm9tjjwHCDtUPvGJPeRSWRPiup2bSEQ=
+github.com/flixurapp/flixur/pluginkit v0.0.0-20260227231322-350c131943ba/go.mod h1:yoVadwtsQAJoqeQMKYF/K+1bBP0+lR88y1gL/tqd9wY=
 github.com/flixurapp/flixur/proto/go v0.0.0-20260227094958-2aca01bd6510 h1:n1rzNv1pwULa2UuvH/163ND/pRyiC71nINAGiqMmxJ8=
 github.com/flixurapp/flixur/proto/go v0.0.0-20260227094958-2aca01bd6510/go.mod h1:J0IfRNO/mBlcC6cVPVfNNthSK586Vom3yP9g7FsDkZM=
+github.com/flixurapp/flixur/proto/go v0.0.0-20260227231322-350c131943ba h1:+rjAWtoV/UzN7+Rr6m8LYbYsYlSYLcvG4f1VwNbjFhY=
+github.com/flixurapp/flixur/proto/go v0.0.0-20260227231322-350c131943ba/go.mod h1:J0IfRNO/mBlcC6cVPVfNNthSK586Vom3yP9g7FsDkZM=
 github.com/go-resty/resty/v2 v2.17.2 h1:FQW5oHYcIlkCNrMD2lloGScxcHJ0gkjshV3qcQAyHQk=
 github.com/go-resty/resty/v2 v2.17.2/go.mod h1:kCKZ3wWmwJaNc7S29BRtUhJwy7iqmn+2mLtQrOyQlVA=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
