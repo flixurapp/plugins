@@ -1,72 +1,63 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"sync"
 
 	"github.com/flixurapp/flixur/pluginkit"
-	protobuf "github.com/flixurapp/flixur/proto/go"
-	"github.com/oklog/ulid/v2"
+	pb "github.com/flixurapp/flixur/proto/go"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"go.uploadedlobster.com/musicbrainzws2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-var INFO = protobuf.PacketInfo{
+var PluginInfo = pb.PluginInfo{
 	Id:          "musicbrainz",
-	Version:     1,
-	MinVersion:  1,
-	Features:    []protobuf.Features{protobuf.Features_ARTIST_SEARCH},
 	Name:        "MusicBrainz",
+	Version:     1,
+	Features:    []pb.Feature{pb.Feature_MUSIC_METADATA},
 	Icon:        "simple-icons:musicbrainz",
 	Description: "Integration with MusicBrainz.org",
 	Author:      "xela.codes",
+	Url:         "https://musicbrainz.org",
 }
 
-var Listener pluginkit.PacketListenerAdder
-var MusicBrainz *musicbrainzws2.Client
+type Plugin struct {
+	pb.UnimplementedFlixurPluginServer
+	client *musicbrainzws2.Client
+}
+
+func (p *Plugin) GetPluginInfo(ctx context.Context) (*pb.PluginInfo, error) {
+	return &PluginInfo, nil
+}
+
+func (p *Plugin) isInitialized() error {
+	if p.client == nil {
+		return status.Error(codes.Unavailable, "MusicBrainz client not initialized")
+	}
+	return nil
+}
 
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: "3:04:05PM",
 		FormatMessage: func(i interface{}) string {
-			return fmt.Sprintf("[%s] %s", INFO.Id, i)
+			return fmt.Sprintf("[%s] %s", PluginInfo.Id, i)
 		},
 	})
 
-	log.Info().Msg("Initializing plugin...")
+	log.Info().Msg("MusicBrainz plugin starting...")
 
-	if err := pluginkit.WriteMessage(&protobuf.PluginPacket{
-		Id:   ulid.Make().String(),
-		Type: protobuf.PacketType_INFO,
-	}, &INFO, os.Stdout); err != nil {
-		log.Err(err).Msg("Failed to write info packet.")
-		panic(0)
+	plugin := &Plugin{
+		client: musicbrainzws2.NewClient(musicbrainzws2.AppInfo{
+			Name:    "Flixur MusicBrainz Plugin",
+			Version: fmt.Sprintf("v%d", PluginInfo.Version),
+		}),
 	}
 
-	Listener = pluginkit.StartReadingPackets(os.Stdin, func(err error) {
-		log.Err(err).Msg("Failed to read packet from stdin.")
-	})
-	pluginkit.AddPacketListener(Listener, protobuf.PacketType_INIT, func(data *protobuf.PacketInit, pkt *protobuf.PluginPacket) {
-		log.Info().Interface("d", data).Msg("Initializing MusicBrainz client...")
-		MusicBrainz = musicbrainzws2.NewClient(musicbrainzws2.AppInfo{
-			Name:    "Flixur MusicBrainz Plugin",
-			Version: fmt.Sprintf("v%d,%d", INFO.Version, data.GetVersion()),
-		})
-	})
-	pluginkit.AddPacketListener(Listener, protobuf.PacketType_DESTROY, func(data *protobuf.PacketDestroy, pkt *protobuf.PluginPacket) {
-		log.Info().Msg("Destroying...")
-		if MusicBrainz != nil {
-			MusicBrainz.Close()
-		}
-	})
-
-	ImplementArtists()
-
-	// never exit
-	var wg sync.WaitGroup
-	wg.Add(1)
-	wg.Wait()
+	pluginkit.Serve(plugin)
 }

@@ -2,49 +2,47 @@ package main
 
 import (
 	"context"
-	"time"
 
-	"github.com/flixurapp/flixur/pluginkit"
-	protobuf "github.com/flixurapp/flixur/proto/go"
+	pb "github.com/flixurapp/flixur/proto/go"
 	"github.com/rs/zerolog/log"
-	"github.com/samber/lo"
 	"go.uploadedlobster.com/musicbrainzws2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func ImplementArtists() {
-	pluginkit.ImplementFeature(Listener, protobuf.Features_ARTIST_SEARCH, func(req *protobuf.FeatureArtistSearchRequest, _ *protobuf.PluginPacket) (*protobuf.FeatureArtistSearchResponse, *protobuf.FeatureError) {
-		if err := CheckInitialization(); err != nil {
-			return nil, err
+func (p *Plugin) ArtistSearch(ctx context.Context, req *pb.ArtistSearchRequest) (*pb.ArtistSearchResponse, error) {
+	if err := p.isInitialized(); err != nil {
+		return nil, err
+	}
+
+	log.Info().Str("query", req.Query).Int32("limit", req.Limit).Msg("ArtistSearch called")
+
+	res, err := p.client.SearchArtists(ctx, musicbrainzws2.SearchFilter{
+		Query:  req.Query,
+		Dismax: true,
+	}, musicbrainzws2.Paginator{Limit: ClampLimit(int(req.Limit))})
+
+	if err != nil {
+		log.Err(err).Msg("MusicBrainz search failed")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	results := make([]*pb.Artist, len(res.Artists))
+	for i, artist := range res.Artists {
+		var location *string
+		if artist.Area != nil {
+			location = &artist.Area.Name
 		}
-		log.Debug().Interface("req", req).Msg("Received search request.")
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		if res, err := MusicBrainz.SearchArtists(ctx, musicbrainzws2.SearchFilter{
-			Query:  req.GetQuery(),
-			Dismax: true,
-		}, musicbrainzws2.Paginator{Limit: ClampLimit(int(req.GetLimit()))}); err != nil {
-			return nil, &protobuf.FeatureError{
-				Code:    int32(protobuf.FeatureErrorCode_UNKNOWN),
-				Message: err.Error(),
-			}
-		} else {
-			return &protobuf.FeatureArtistSearchResponse{
-				Results: lo.Map(res.Artists, func(artist musicbrainzws2.Artist, _ int) *protobuf.Artist {
-					var area *string
-					if artist.Area != nil {
-						area = &artist.Area.Name
-					}
-
-					return &protobuf.Artist{
-						Id:       string(artist.ID),
-						Provider: INFO.Id,
-						Name:     artist.Name,
-						Location: area,
-					}
-				}),
-			}, nil
+		results[i] = &pb.Artist{
+			Id:       string(artist.ID),
+			Provider: PluginInfo.Id,
+			Name:     artist.Name,
+			Location: location,
 		}
-	})
+	}
+
+	return &pb.ArtistSearchResponse{
+		Results: results,
+	}, nil
 }
