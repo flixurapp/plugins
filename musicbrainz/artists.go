@@ -35,10 +35,11 @@ func (p *Plugin) ArtistSearch(ctx context.Context, req *pb.ArtistSearchRequest) 
 		}
 
 		results[i] = &pb.Artist{
-			Id:       string(artist.ID),
-			Provider: PluginInfo.Id,
-			Name:     artist.Name,
-			Location: location,
+			Id:          string(artist.ID),
+			Provider:    PluginInfo.Id,
+			Name:        artist.Name,
+			Description: &artist.Disambiguation,
+			Location:    location,
 		}
 	}
 
