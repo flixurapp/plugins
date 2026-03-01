@@ -3,8 +3,8 @@ module github.com/flixurapp/plugins/musicbrainz
 go 1.25.0
 
 require (
-	github.com/flixurapp/flixur/pluginkit v0.0.0-20260228053857-f7ec37ce42f0
-	github.com/flixurapp/flixur/proto/go v0.0.0-20260228053857-f7ec37ce42f0
+	github.com/flixurapp/flixur/pluginkit v0.0.0-20260301080631-959e5c80cb2f
+	github.com/flixurapp/flixur/proto/go v0.0.0-20260301080631-959e5c80cb2f
 	github.com/rs/zerolog v1.34.0
 	go.uploadedlobster.com/musicbrainzws2 v0.18.0
 	google.golang.org/grpc v1.79.1

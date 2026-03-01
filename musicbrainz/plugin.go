@@ -3,18 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/flixurapp/flixur/pluginkit"
 	pb "github.com/flixurapp/flixur/proto/go"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"go.uploadedlobster.com/musicbrainzws2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-var PluginInfo = pb.PluginInfo{
+var PluginInfo = &pb.PluginInfo{
 	Id:          "musicbrainz",
 	Name:        "MusicBrainz",
 	Version:     1,
@@ -31,9 +29,10 @@ type Plugin struct {
 }
 
 func (p *Plugin) GetPluginInfo(ctx context.Context) (*pb.PluginInfo, error) {
-	return &PluginInfo, nil
+	return PluginInfo, nil
 }
 
+// helper to test if the musicbrainz client is initialized before making requests
 func (p *Plugin) isInitialized() error {
 	if p.client == nil {
 		return status.Error(codes.Unavailable, "MusicBrainz client not initialized")
@@ -42,14 +41,7 @@ func (p *Plugin) isInitialized() error {
 }
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out:        os.Stderr,
-		TimeFormat: "3:04:05PM",
-		FormatMessage: func(i interface{}) string {
-			return fmt.Sprintf("[%s] %s", PluginInfo.Id, i)
-		},
-	})
-
+	pluginkit.SetupPluginLogger(PluginInfo)
 	log.Info().Msg("MusicBrainz plugin starting...")
 
 	plugin := &Plugin{
@@ -58,6 +50,7 @@ func main() {
 			Version: fmt.Sprintf("v%d", PluginInfo.Version),
 		}),
 	}
+	defer plugin.client.Close()
 
 	pluginkit.Serve(plugin)
 }
