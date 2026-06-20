@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/flixurapp/flixur/pluginkit"
-	pb "github.com/flixurapp/flixur/proto/go"
+	"forge.xela.codes/xela/flixur/pluginkit"
+	pb "forge.xela.codes/xela/flixur/proto/go"
 	"github.com/rs/zerolog/log"
 	"go.uploadedlobster.com/musicbrainzws2"
 	"google.golang.org/grpc/codes"
