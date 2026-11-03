@@ -17,6 +17,6 @@ let
     };
   };
 in
-lib.mapAttrs (name: _: callPackage ./${name} { inherit defaultAttrs; }) (
+lib.mapAttrs (name: _: callPackage ./${name} { defaultAttrs = defaultAttrs name; }) (
   lib.filterAttrs buildableDir (builtins.readDir ./.)
 )
