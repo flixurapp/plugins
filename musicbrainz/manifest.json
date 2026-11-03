@@ -2,7 +2,6 @@
   "id": "musicbrainz",
   "name": "MusicBrainz",
   "version": "2026.11.03",
-  "dependencies": [],
   "features": ["MUSIC_METADATA"],
   "icon": "simple-icons:musicbrainz",
   "description": "Integration with MusicBrainz.org",
