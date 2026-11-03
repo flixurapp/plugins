@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	pb "forge.xela.codes/xela/flixur/proto/go"
+	pb "forge.xela.codes/xela/flixur/pluginkit/proto"
 	"github.com/rs/zerolog/log"
 	"go.uploadedlobster.com/musicbrainzws2"
 	"google.golang.org/grpc/codes"

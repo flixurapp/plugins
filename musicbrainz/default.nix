@@ -7,7 +7,7 @@ buildGoModule (
   lib.recursiveUpdate {
     version = "2026.11.03";
     src = ./.;
-    vendorHash = "sha256-Fc2bYpaeYQ1r0MSDAJ8m7aCxQKVciTLzG0OxxgTNSJ0=";
+    vendorHash = "sha256-0ljfehTUqrn5rdxGX36beUaq2nMVpPJT3kwjNmwWBf4=";
 
     meta = {
       author = "xela.codes";
