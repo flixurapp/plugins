@@ -1,10 +1,6 @@
 # Imports every non-dot directory as a plugin.
-{
-  callPackage,
-  pkgs,
-}:
+{ lib, ... }@pkgs:
 let
-  inherit (pkgs) lib;
   buildableDir =
     name: type:
     type == "directory" && !lib.hasPrefix "." name && builtins.pathExists "${./.}/${name}/default.nix";
@@ -42,7 +38,7 @@ lib.mapAttrs (
       assert manifest.id == name;
       defaultAttrs manifest
     );
-    extraAttrs = callPackage (./. + "/${name}") { inherit manifest; };
+    extraAttrs = import (./. + "/${name}") { inherit pkgs lib manifest; };
   in
   pkgs.buildGoModule (lib.recursiveUpdate attrs extraAttrs)
 ) (lib.filterAttrs buildableDir (builtins.readDir ./.))

@@ -15,11 +15,7 @@
     {
       # default overlay exposing all packages under a flixurPlugins set
       overlays.default = final: prev: {
-        flixurPlugins = import ./default.nix {
-          # pass final callPackage function instead of overridable one
-          callPackage = final.lib.callPackageWith final;
-          pkgs = final;
-        };
+        flixurPlugins = import ./default.nix final;
       };
     }
     # expose each plugin as a package too
