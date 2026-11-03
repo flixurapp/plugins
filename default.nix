@@ -44,5 +44,5 @@ lib.mapAttrs (
     );
     extraAttrs = callPackage (./. + "/${name}") { inherit manifest; };
   in
-  pkgs.buildGoModule (attrs // extraAttrs)
+  pkgs.buildGoModule (lib.recursiveUpdate attrs extraAttrs)
 ) (lib.filterAttrs buildableDir (builtins.readDir ./.))
