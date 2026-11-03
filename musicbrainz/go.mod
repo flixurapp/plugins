@@ -3,7 +3,7 @@ module forge.xela.codes/xela/flixur-plugins/musicbrainz
 go 1.26.4
 
 require (
-	forge.xela.codes/xela/flixur/pluginkit v0.0.0-20261103065244-1a6dbef1ca1b
+	forge.xela.codes/xela/flixur/pluginkit v0.0.0-20261103092640-1d7800aaba9b
 	github.com/rs/zerolog v1.35.1
 	go.uploadedlobster.com/musicbrainzws2 v0.19.0
 	google.golang.org/grpc v1.85.0
