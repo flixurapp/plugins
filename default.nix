@@ -1,22 +1,48 @@
 # Imports every non-dot directory as a plugin.
 {
-  lib,
   callPackage,
+  pkgs,
 }:
 let
+  inherit (pkgs) lib;
   buildableDir =
     name: type:
     type == "directory" && !lib.hasPrefix "." name && builtins.pathExists "${./.}/${name}/default.nix";
 
-  defaultAttrs = pname: {
-    inherit pname;
+  manifestOf = name: builtins.fromJSON (builtins.readFile ./${name}/manifest.json);
+
+  # Package metadata derived from the manifest.
+  defaultAttrs = manifest: {
+    pname = manifest.id;
+    version = manifest.version;
     meta = {
+      description = manifest.description;
+      author = manifest.author;
+      homepage = manifest.url;
+      mainProgram = manifest.id;
+      # from this repo
       license = lib.licenses.agpl3Only;
-      mainProgram = pname;
       platforms = lib.platforms.unix;
     };
+
+    # install manifest.json in the package too
+    postInstall = ''
+      test -x "$out/bin/${manifest.id}"
+      mkdir -p "$out/share/flixur-plugins/${manifest.id}"
+      ${lib.getExe pkgs.jq} --arg bin "$out/bin/${manifest.id}" '.bin = $bin' \
+        ${./${manifest.id}/manifest.json} > "$out/share/flixur-plugins/${manifest.id}/manifest.json"
+    '';
   };
 in
-lib.mapAttrs (name: _: callPackage ./${name} { defaultAttrs = defaultAttrs name; }) (
-  lib.filterAttrs buildableDir (builtins.readDir ./.)
-)
+lib.mapAttrs (
+  name: _:
+  let
+    manifest = manifestOf name;
+    attrs = (
+      assert manifest.id == name;
+      defaultAttrs manifest
+    );
+    extraAttrs = callPackage (./. + "/${name}") { inherit manifest; };
+  in
+  pkgs.buildGoModule (attrs // extraAttrs)
+) (lib.filterAttrs buildableDir (builtins.readDir ./.))
